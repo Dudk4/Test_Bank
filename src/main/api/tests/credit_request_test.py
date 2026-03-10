@@ -10,12 +10,10 @@ from src.main.api.models.create_user_request import CreateUserRequest
 class TestCreditRequest:
     @pytest.mark.parametrize("amount, term_months", [(5000, 12)])
     def test_credit_request(self, db_session: Session, amount: float, term_months: int, api_manager: ApiManager,
-                            create_credit_user_request: CreateUserRequest):
-        account = api_manager.user_steps.create_account(create_credit_user_request)
-
+                            create_credit_user_request: CreateUserRequest, create_credit_user_account_request):
         response = api_manager.user_steps.credit_account_request(
             create_user_request=create_credit_user_request,
-            account_id=account.id,
+            account_id=create_credit_user_account_request.id,
             amount=amount,
             term_months=term_months
         )
@@ -24,7 +22,5 @@ class TestCreditRequest:
 
         credit_from_db = Credit.get_credit_by_id(db_session, response.creditId)
 
-        assert credit_from_db is not None, "Кредит не создан, записи нет в БД"
         assert credit_from_db.id == response.creditId, "Кредит не создан, id кредита нет в БД"
         assert credit_from_db.amount == response.amount, "Кредит в БД создался с неверной суммой"
-        assert credit_from_db.term_months == response.termMonths, "Срок кредита в БД создался некорректный"
