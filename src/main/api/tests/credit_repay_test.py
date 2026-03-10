@@ -9,12 +9,10 @@ from src.main.api.db.crud.credit_crud import CreditCrudDb as Credit
 class TestCreditRepay:
     @pytest.mark.parametrize("amount, term_months", [(5000, 12)])
     def test_credit_repay(self, db_session: Session, amount: float, term_months: int, api_manager: ApiManager,
-                            create_credit_user_request: CreateUserRequest):
-        account = api_manager.user_steps.create_account(create_credit_user_request)
-
+                            create_credit_user_request: CreateUserRequest, create_credit_user_account_request):
         credit_response = api_manager.user_steps.credit_account_request(
             create_user_request=create_credit_user_request,
-            account_id=account.id,
+            account_id=create_credit_user_account_request.id,
             amount=amount,
             term_months=term_months
         )
@@ -33,6 +31,5 @@ class TestCreditRepay:
 
         credit_from_db = Credit.get_credit_by_id(db_session, repay_response.creditId)
 
-        assert credit_from_db is not None, "Кредит не найден в БД после погашения"
         assert credit_from_db.id == repay_response.creditId, "В БД найден неверный кредит"
         assert credit_from_db.balance == 0, "Баланс кредита после полного погашения не равен нулю"
