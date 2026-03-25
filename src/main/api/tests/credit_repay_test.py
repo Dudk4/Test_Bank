@@ -9,7 +9,7 @@ from src.main.api.db.crud.credit_crud import CreditCrudDb as Credit
 class TestCreditRepay:
     @pytest.mark.parametrize("amount, term_months", [(5000, 12)])
     def test_credit_repay(self, db_session: Session, amount: float, term_months: int, api_manager: ApiManager,
-                            create_credit_user_request: CreateUserRequest, create_credit_user_account_request):
+                          create_credit_user_request: CreateUserRequest, create_credit_user_account_request):
         credit_response = api_manager.user_steps.credit_account_request(
             create_user_request=create_credit_user_request,
             account_id=create_credit_user_account_request.id,
